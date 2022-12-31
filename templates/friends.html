@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Friends
+{% endblock %}
+
+{% block main %}
+
+<form action="/friends" method="post">
+    <div class="mb-3">
+        <label> Add A Friend: 
+        <input name="email" placeholder="Friend's Email" type="email"  type="text">
+        </label>
+        <button class="btn" type="submit">Add Friend</button>
+    </div>
+</form>
+
+{% if hidden[0] == "U" %}
+<p> {{hidden}} <form action="/sendEmail" method="post">
+    <div class="mb-3">
+        <input name="email" hidden value={{email}} type="text">
+        <button class="btn" type="submit">Invite</button>
+    </div>
+</form>
+</p>
+{% else %}
+<p> {{hidden}}</p>
+{% endif%}
+
+
+
+<table>
+    <tbody>
+        {%for friend in friends%}
+        <tr>
+            <td><img src= {{friend["profile_pic"]}} width="40" height="40" class="rounded-circle"></td>
+            <td>{{friend["name"]}}</td>
+            <td>{{friend["inBerg"]}}</td>
+            <td>
+                <form action="/delete" method="post">
+                    <div class="mb-3">
+                        <input hidden name="id" type="text" value = {{friend["id"]}}>
+                        <button class="btn" type="submit"> Remove Friend</button>
+                    </div>
+                </form>
+                
+            </td>
+
+        </tr>
+    {%endfor%}
+    </tbody>
+</table>
+
+
+{% endblock %}
+
+{% block script %}
+
+{% endblock %}

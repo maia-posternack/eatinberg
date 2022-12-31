@@ -1,0 +1,11 @@
+cs50
+Flask
+Flask_Session
+requests
+functools
+flask_login
+json
+os
+oauthlib
+flask_mail
+cryptography

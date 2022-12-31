@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Map
+{% endblock %}
+
+{% block main %}
+
+<!-- table of everything owned-->
+
+<div class="container">
+    <div class="section">
+        {% if inBerg == True %}
+        <h2> Hi {{name}}, you are in Berg </h2>
+        {%else%}
+        <h2> Hi {{name}}, you are not in Berg</h2>
+        {% endif %}
+
+        <form action="/map" method="post">
+            <label for="ghost"> Don't want people to know you are in berg? Turn on ghost mode: </label>
+            <label class="switch switch-flat">
+                {% if mode == 1%}
+                <input checked="checked" class="switch-input" name = "ghost" type="checkbox" />
+                {% else %}
+                <input class="switch-input" name = "ghost" type="checkbox" />
+                {%endif%}
+                <span class="switch-label" data-on="On" data-off="Off"></span> 
+                <span class="switch-handle"></span>
+            </label>
+
+            <button class="btn" type="submit"> Save</button>
+
+        </form>
+    </div>
+    <br> 
+
+        <div id="googleMap" style="width:100%;height:400px;"></div>
+        <p id="latitude" hidden> {{lat}} </p> 
+        <p id="longitude" hidden> {{long}} </p> 
+
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+
+{% if lat and long %}
+
+<script>
+    function myMap() {
+    var latitude = parseFloat(document.getElementById("latitude").innerHTML)
+    var longitude = parseFloat(document.getElementById("longitude").innerHTML)
+    const newPosition = { lat: latitude, lng: longitude};
+
+
+    var mapProp= {
+      center:newPosition,
+      zoom:18,
+    };
+    var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
+    const marker = new google.maps.Marker({ map, position: newPosition });
+
+    const directionsService = new google.maps.DirectionsService();
+
+    directionsService.route(
+    {
+            origin: newPosition,
+            destination: "45 Quincy St, Cambridge, MA" ,
+            travelMode: "WALKING",
+    },
+    (response, status) => {
+        if (status === "OK") {
+
+            new google.maps.DirectionsRenderer({
+                suppressMarkers: true,
+                directions: response,
+                map: map,
+              });
+        }
+    }
+)
+
+
+    }
+    </script>
+    {%endif%}
+    
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDt2oNldazoPT3_coWDOLtFVpF_4kCL2sE&callback=myMap"></script>
+
+{% endblock %}

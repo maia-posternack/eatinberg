@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Index
+{% endblock %}
+
+{% block main %}
+
+<!-- table of everything owned-->
+
+<div class="container">
+    <div class="section">
+
+        <div class="holder">
+        <img src="/static/berg.jpg" width="100%" height="auto" class="load">
+        <p class = "centered"> <b> please wait. retrieving location data. this takes about 15 seconds. the page will automatically refresh </b></p>
+
+        </div>
+
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+
+<script>
+    function myMap() {
+    
+    
+    if ('geolocation' in navigator) {
+    navigator.geolocation.getCurrentPosition(
+        position => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+       
+        const dict_values = {latitude, longitude} 
+        const s = JSON.stringify(dict_values); 
+        $.ajax({
+            url:"/",
+            type:"POST",
+            contentType: "application/json",
+            data: JSON.stringify(s)
+        });
+
+        window.location = "/map"
+
+
+      },
+      err => alert(`Error (${err.code}): ${err.message}`)
+     );
+    } else {
+        alert('Geolocation is not supported by your browser.');
+    }
+    }
+    </script>
+    
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDt2oNldazoPT3_coWDOLtFVpF_4kCL2sE&callback=myMap"></script>
+
+{% endblock %}
+
