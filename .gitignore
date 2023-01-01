@@ -2,3 +2,4 @@ __pycache__
 env
 flask_session
 .DS_Store
+SECRETS.md

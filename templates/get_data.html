@@ -27,16 +27,16 @@
 
 <script>
     function myMap() {
-    
-    
+
+
     if ('geolocation' in navigator) {
     navigator.geolocation.getCurrentPosition(
         position => {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-       
-        const dict_values = {latitude, longitude} 
-        const s = JSON.stringify(dict_values); 
+
+        const dict_values = {latitude, longitude}
+        const s = JSON.stringify(dict_values);
         $.ajax({
             url:"/",
             type:"POST",
@@ -55,8 +55,7 @@
     }
     }
     </script>
-    
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDt2oNldazoPT3_coWDOLtFVpF_4kCL2sE&callback=myMap"></script>
+
+    <script src=link></script>
 
 {% endblock %}
-

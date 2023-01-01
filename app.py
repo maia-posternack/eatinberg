@@ -15,13 +15,14 @@ import requests
 # database
 db = SQL("sqlite:///final.db")
 
-# get google info via command line 
+# get google info via command line
 
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", None)
 GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", None)
-GOOGLE_DISCOVERY_URL = (
-    "https://accounts.google.com/.well-known/openid-configuration"
-)
+GOOGLE_DISCOVERY_URL = ("https://accounts.google.com/.well-known/openid-configuration")
+MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD", None)
+MAP_KEY = os.environ.get("MAP_KEY", None)
+
 
 
 # configure application
@@ -35,7 +36,7 @@ Session(app)
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USERNAME'] = 'eatinberg@gmail.com'
-app.config['MAIL_PASSWORD'] = 'volyfjsglvrmdwee'
+app.config['MAIL_PASSWORD'] = MAIL_PASSWORD
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail= Mail(app)
@@ -61,7 +62,7 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
-# index page 
+# index page
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "GET":
@@ -69,7 +70,9 @@ def index():
             return render_template("unlogged.html")
         else:
             profile_pic = db.execute("SELECT profile_pic FROM user WHERE id = ?", session["user_id"])[0]["profile_pic"]
-            return render_template("get_data.html", profile_pic = profile_pic)
+            link = "https://maps.googleapis.com/maps/api/js?key="+MAP_KEY+"&callback=myMap"
+            print(link)
+            return render_template("get_data.html", profile_pic = profile_pic, link = link)
     else:
         # from ajax request that gets and send latitude and longitude
         location = json.loads(request.get_json())
@@ -133,7 +136,7 @@ def callback():
     picture = userinfo_response.json()["picture"]
     users_name = userinfo_response.json()["name"]
     friends = {"keys" :["1", "2"]}
-   
+
     # if new user add to user db
     if not db.execute("SELECT * FROM user WHERE id = ?", unique_id):
           db.execute( "INSERT INTO user (id, name, email, profile_pic, friends) VALUES (?, ?, ?, ?, ?)", unique_id, users_name, users_email, picture, json.dumps(friends))
@@ -164,7 +167,7 @@ def map():
         berg = inBerg(lat,long, currentMode)
         profile_pic = db.execute("SELECT profile_pic FROM user WHERE id = ?", session["user_id"])[0]["profile_pic"]
         name = db.execute("SELECT name FROM user WHERE id = ?", session["user_id"])[0]["name"]
-        
+
         return render_template("map.html", lat = lat, long = long, inBerg = berg, profile_pic = profile_pic, name = name, mode = currentMode)
     else:
         # post happens when someone switches to ghost mode...
@@ -223,7 +226,7 @@ def friends():
                 else:
                     deets["inBerg"] = "NOT IN BERG"
                 friends.append(deets)
-        
+
         friends.sort(key=sortFunction)
         return render_template("friends.html", friends = friends, hidden = hidden,email=email, profile_pic = profile_pic)
     else:
